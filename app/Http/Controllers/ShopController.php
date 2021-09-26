@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Shop;
 use Illuminate\Http\Request;
 
+use function GuzzleHttp\Promise\all;
+
 class ShopController extends Controller
 {
     /**
@@ -15,7 +17,12 @@ class ShopController extends Controller
     public function index()
     {
         $shops = Shop::all();
-        return view('shops.index', compact('shops'));
+
+        $latitude = $shops->average('latitude');
+        $longitude = $shops->average('longitude');
+        $zoom = 5;
+
+        return view('shops.index', compact('shops', 'latitude', 'longitude', 'zoom'));
     }
 
     /**
@@ -25,7 +32,11 @@ class ShopController extends Controller
      */
     public function create()
     {
-        return view('shops.create');
+        $latitude = 35.658584;
+        $longitude = 139.7454316;
+        $zoom = 10;
+
+        return view('shops.create', compact('latitude', 'longitude', 'zoom'));
     }
 
     /**
@@ -38,11 +49,13 @@ class ShopController extends Controller
     {
         $shop = new Shop();
 
-        $shop->name = $request->name;
-        $shop->description = $request->description;
-        $shop->address = $request->address;
-        $shop->latitude = $request->latitude;
-        $shop->longitude = $request->longitude;
+        // $shop->name = $request->name;
+        // $shop->description = $request->description;
+        // $shop->address = $request->address;
+        // $shop->latitude = $request->latitude;
+        // $shop->longitude = $request->longitude;
+        $shop->fill($request->all());
+
         $shop->save();
 
         return redirect()->route('shops.index');
@@ -56,7 +69,12 @@ class ShopController extends Controller
      */
     public function show(Shop $shop)
     {
-        return view('shops.show', compact('shop'));
+
+        $latitude = $shop->latitude;
+        $longitude = $shop->longitude;
+        $zoom = 12;
+
+        return view('shops.show', compact('shop', 'latitude', 'longitude', 'zoom'));
     }
 
     /**
@@ -67,7 +85,11 @@ class ShopController extends Controller
      */
     public function edit(Shop $shop)
     {
-        return view('shops.edit', compact('shop'));
+        $latitude = $shop->latitude;
+        $longitude = $shop->longitude;
+        $zoom = 12;
+
+        return view('shops.edit', compact('shop', 'latitude', 'longitude', 'zoom'));
     }
 
     /**
@@ -79,11 +101,14 @@ class ShopController extends Controller
      */
     public function update(Request $request, Shop $shop)
     {
-        $shop->name = $request->name;
-        $shop->description = $request->description;
-        $shop->address = $request->address;
-        $shop->latitude = $request->latitude;
-        $shop->longitude = $request->longitude;
+        // $shop->name = $request->name;
+        // $shop->description = $request->description;
+        // $shop->address = $request->address;
+        // $shop->latitude = $request->latitude;
+        // $shop->longitude = $request->longitude;
+
+        $shop->fill($request->all());
+
         $shop->save();
 
         return redirect()->route('shops.index');
